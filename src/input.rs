@@ -35,6 +35,7 @@ use index::{Line, Column, Side, Point};
 use term::SizeInfo;
 use term::mode::TermMode;
 use util::fmt::Red;
+use glutin::VirtualKeyCode;
 
 pub const FONT_SIZE_STEP: f32 = 0.5;
 
@@ -687,8 +688,16 @@ impl<'a, A: ActionContext + 'a> Processor<'a, A> {
                 if self.process_key_bindings(input) {
                     *self.ctx.suppress_chars() = true;
                 }
-            },
-            ElementState::Released => *self.ctx.suppress_chars() = false,
+            }
+            ElementState::Released => {
+                // glutin only reports my Insert key as `Released` (never pressed),
+                // so hack around it to get my Shift+Insert shortcut to work.
+                if input.virtual_keycode == Some(VirtualKeyCode::Insert) {
+                    let _ = self.process_key_bindings(input);
+                }
+
+                *self.ctx.suppress_chars() = false;
+            }
         }
     }
 
