@@ -1,6 +1,5 @@
 language: rust
 
-sudo: required
 services:
   - docker
 
@@ -13,6 +12,7 @@ os:
   - windows
 
 rust:
+  - 1.36.0
   - stable
   - nightly
 
@@ -23,9 +23,24 @@ matrix:
       os: linux
       rust: stable
       env: ARCH=i386
+    - name: "Clippy Linux"
+      os: linux
+      env: CLIPPY=true
+      rust: stable
+    - name: "Clippy OSX"
+      os: osx
+      env: CLIPPY=true
+      rust: stable
+    - name: "Clippy Windows"
+      os: windows
+      env: CLIPPY=true
+      rust: stable
+    - name: "Rustfmt"
+      os: linux
+      env: RUSTFMT=true
+      rust: nightly
   allow_failures:
     - rust: nightly
-    - os: windows
 
 install: ci/install.sh
 script: ci/script.sh
@@ -41,5 +56,6 @@ deploy:
   on:
     tags: true
     rust: stable
+    condition: $CLIPPY != true
     repo: jwilm/alacritty
     branch: master

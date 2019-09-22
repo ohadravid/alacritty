@@ -1,14 +1,12 @@
 TARGET = alacritty
 
 APP_NAME = Alacritty.app
-ASSETS_DIR = assets
+ASSETS_DIR = extra
 RELEASE_DIR = target/release
 APP_TEMPLATE = $(ASSETS_DIR)/osx/$(APP_NAME)
 APP_DIR = $(RELEASE_DIR)/osx
 APP_BINARY = $(RELEASE_DIR)/$(TARGET)
 APP_BINARY_DIR  = $(APP_DIR)/$(APP_NAME)/Contents/MacOS
-
-export MACOSX_DEPLOYMENT_TARGET = $(shell defaults read loginwindow SystemVersionStampAsString)
 
 DMG_NAME = Alacritty.dmg
 DMG_DIR = $(RELEASE_DIR)/osx
@@ -24,10 +22,7 @@ help: ## Prints help for targets with comments
 
 binary: | $(TARGET) ## Build release binary with cargo
 $(TARGET):
-ifneq ( "${MACOSX_DEPLOYMENT_TARGET}" , "")
-	@echo MACOSX_DEPLOYMENT_TARGET=$${MACOSX_DEPLOYMENT_TARGET}
-endif
-	cargo build --release
+	MACOSX_DEPLOYMENT_TARGET="10.11" cargo build --release
 
 app: | $(APP_NAME) ## Clone Alacritty.app template and mount binary
 $(APP_NAME): $(TARGET) $(APP_TEMPLATE)
